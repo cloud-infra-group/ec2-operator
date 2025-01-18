@@ -37,6 +37,7 @@ import (
 
 	ec2operatorcloudinfragroupiov1alpha1 "github.com/cloud-infra-group/ec2-operator/api/v1alpha1"
 	"github.com/cloud-infra-group/ec2-operator/internal/controller"
+	webhookec2operatorcloudinfragroupiov1alpha1 "github.com/cloud-infra-group/ec2-operator/internal/webhook/v1alpha1"
 	// +kubebuilder:scaffold:imports
 )
 
@@ -155,6 +156,13 @@ func main() {
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "AWSVPCEndpointServicePrincipal")
 		os.Exit(1)
+	}
+	// nolint:goconst
+	if os.Getenv("ENABLE_WEBHOOKS") != "false" {
+		if err = webhookec2operatorcloudinfragroupiov1alpha1.SetupAWSVPCEndpointServiceWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "AWSVPCEndpointService")
+			os.Exit(1)
+		}
 	}
 	// +kubebuilder:scaffold:builder
 
