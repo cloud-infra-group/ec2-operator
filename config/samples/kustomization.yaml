@@ -1,0 +1,4 @@
+## Append samples of your project ##
+resources:
+- ec2operator.cloud-infra-group.io_v1alpha1_awsvpcendpointservice.yaml
+# +kubebuilder:scaffold:manifestskustomizesamples

@@ -1,0 +1,9 @@
+apiVersion: ec2operator.cloud-infra-group.io.cloud-infra-group.io/v1alpha1
+kind: AWSVPCEndpointService
+metadata:
+  labels:
+    app.kubernetes.io/name: ec2-operator
+    app.kubernetes.io/managed-by: kustomize
+  name: awsvpcendpointservice-sample
+spec:
+  # TODO(user): Add fields here
