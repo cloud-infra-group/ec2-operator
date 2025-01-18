@@ -17,4 +17,13 @@ resources:
   kind: AWSVPCEndpointService
   path: github.com/cloud-infra-group/ec2-operator/api/v1alpha1
   version: v1alpha1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: cloud-infra-group.io
+  group: ec2operator.cloud-infra-group.io
+  kind: AWSVPCEndpointServicePrincipal
+  path: github.com/cloud-infra-group/ec2-operator/api/v1alpha1
+  version: v1alpha1
 version: "3"

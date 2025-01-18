@@ -3,6 +3,7 @@
 # It should be run by config/default
 resources:
 - bases/ec2operator.cloud-infra-group.io.cloud-infra-group.io_awsvpcendpointservices.yaml
+- bases/ec2operator.cloud-infra-group.io.cloud-infra-group.io_awsvpcendpointserviceprincipals.yaml
 # +kubebuilder:scaffold:crdkustomizeresource
 
 patches:

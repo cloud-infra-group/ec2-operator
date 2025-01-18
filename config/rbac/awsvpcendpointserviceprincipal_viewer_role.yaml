@@ -1,0 +1,23 @@
+# permissions for end users to view awsvpcendpointserviceprincipals.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: ec2-operator
+    app.kubernetes.io/managed-by: kustomize
+  name: awsvpcendpointserviceprincipal-viewer-role
+rules:
+- apiGroups:
+  - ec2operator.cloud-infra-group.io.cloud-infra-group.io
+  resources:
+  - awsvpcendpointserviceprincipals
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ec2operator.cloud-infra-group.io.cloud-infra-group.io
+  resources:
+  - awsvpcendpointserviceprincipals/status
+  verbs:
+  - get
