@@ -1,5 +1,5 @@
 /*
-Copyright 2025.
+Copyright 2024.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,52 +14,46 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package controller
+package controller_test
 
 import (
-	"context"
 	"fmt"
 	"path/filepath"
 	"runtime"
 	"testing"
+	"time"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-
 	"k8s.io/client-go/kubernetes/scheme"
-	"k8s.io/client-go/rest"
+	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/envtest"
-	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
-	ec2operatorcloudinfragroupiov1alpha1 "github.com/cloud-infra-group/ec2-operator/api/v1alpha1"
-	// +kubebuilder:scaffold:imports
+	ec2operatorv1alpha1 "github.com/cloud-infra-group/ec2-operator/api/v1alpha1"
 )
 
-// These tests use Ginkgo (BDD-style Go testing framework). Refer to
-// http://onsi.github.io/ginkgo/ to learn more about Ginkgo.
+var (
+	k8sClient  client.Client        // Shared Kubernetes client for tests
+	k8sManager ctrl.Manager         // Shared Kubernetes manager for controllers
+	testEnv    *envtest.Environment // Test environment for controller-runtime
+)
 
-var cfg *rest.Config
-var k8sClient client.Client
-var testEnv *envtest.Environment
-var ctx context.Context
-var cancel context.CancelFunc
-
-func TestControllers(t *testing.T) {
+func TestAPIs(t *testing.T) {
 	RegisterFailHandler(Fail)
-
 	RunSpecs(t, "Controller Suite")
 }
 
 var _ = BeforeSuite(func() {
-	logf.SetLogger(zap.New(zap.WriteTo(GinkgoWriter), zap.UseDevMode(true)))
+	ctrl.SetLogger(zap.New(zap.WriteTo(GinkgoWriter), zap.UseDevMode(true)))
 
-	ctx, cancel = context.WithCancel(context.TODO())
-
-	By("bootstrapping test environment")
+	// Initialize the test environment
 	testEnv = &envtest.Environment{
-		CRDDirectoryPaths:     []string{filepath.Join("..", "..", "config", "crd", "bases")},
+		ControlPlaneStopTimeout: 90 * time.Second, // Extend the timeout for stopping the test environment
+		CRDDirectoryPaths: []string{
+			filepath.Join("..", "..", "config", "crd", "bases"),
+		},
 		ErrorIfCRDPathMissing: true,
 
 		// The BinaryAssetsDirectory is only required if you want to run the tests directly
@@ -67,30 +61,38 @@ var _ = BeforeSuite(func() {
 		// default path defined in controller-runtime which is /usr/local/kubebuilder/.
 		// Note that you must have the required binaries setup under the bin directory to perform
 		// the tests directly. When we run make test it will be setup and used automatically.
-		BinaryAssetsDirectory: filepath.Join("..", "..", "bin", "k8s",
-			fmt.Sprintf("1.31.0-%s-%s", runtime.GOOS, runtime.GOARCH)),
+		BinaryAssetsDirectory: func() string {
+			st, _ := filepath.Abs(filepath.Join("..", "..", "bin", "envtest", "k8s",
+				fmt.Sprintf("1.31.0-%s-%s", runtime.GOOS, runtime.GOARCH)))
+			return st
+		}(),
 	}
 
-	var err error
-	// cfg is defined in this file globally.
-	cfg, err = testEnv.Start()
+	// Start the environment and get the configuration
+	cfg, err := testEnv.Start()
 	Expect(err).NotTo(HaveOccurred())
 	Expect(cfg).NotTo(BeNil())
 
-	err = ec2operatorcloudinfragroupiov1alpha1.AddToScheme(scheme.Scheme)
+	// Add API scheme
+	err = ec2operatorv1alpha1.AddToScheme(scheme.Scheme)
 	Expect(err).NotTo(HaveOccurred())
 
-	// +kubebuilder:scaffold:scheme
-
-	k8sClient, err = client.New(cfg, client.Options{Scheme: scheme.Scheme})
+	// Initialize Kubernetes manager
+	k8sManager, err = ctrl.NewManager(cfg, ctrl.Options{
+		Scheme: scheme.Scheme,
+	})
 	Expect(err).NotTo(HaveOccurred())
+
+	// Create a shared client
+	k8sClient = k8sManager.GetClient()
 	Expect(k8sClient).NotTo(BeNil())
 
+	// Start the manager in a separate goroutine
+	go func() {
+		Expect(k8sManager.Start(ctrl.SetupSignalHandler())).To(Succeed())
+	}()
 })
 
 var _ = AfterSuite(func() {
-	By("tearing down the test environment")
-	cancel()
-	err := testEnv.Stop()
-	Expect(err).NotTo(HaveOccurred())
+	Expect(testEnv.Stop()).To(Succeed())
 })

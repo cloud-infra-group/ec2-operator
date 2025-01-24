@@ -1,5 +1,5 @@
 /*
-Copyright 2025.
+Copyright 2024.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -20,22 +20,14 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
-// NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
-
 // AWSVPCEndpointServicePrincipalSpec defines the desired state of AWSVPCEndpointServicePrincipal.
 type AWSVPCEndpointServicePrincipalSpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
-
-	// Foo is an example field of AWSVPCEndpointServicePrincipal. Edit awsvpcendpointserviceprincipal_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	AWSVPCEndpointServiceRef AWSVPCEndpointServiceRef `json:"awsVpcEndpointServiceRef"`
 }
 
 // AWSVPCEndpointServicePrincipalStatus defines the observed state of AWSVPCEndpointServicePrincipal.
 type AWSVPCEndpointServicePrincipalStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+	Ready bool `json:"ready"`
 }
 
 // +kubebuilder:object:root=true
