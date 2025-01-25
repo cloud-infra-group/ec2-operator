@@ -19,18 +19,19 @@ package controller
 import (
 	"context"
 
+	ec2operatorv1alpha1 "github.com/cloud-infra-group/ec2-operator/api/v1alpha1"
+	"github.com/cloud-infra-group/ec2-operator/internal/ec2client"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
-
-	ec2operatorv1alpha1 "github.com/cloud-infra-group/ec2-operator/api/v1alpha1"
 )
 
 // AWSVPCEndpointServicePrincipalReconciler reconciles a AWSVPCEndpointServicePrincipal object
 type AWSVPCEndpointServicePrincipalReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
+	EC2API ec2client.EC2API
 }
 
 // +kubebuilder:rbac:groups=ec2operator.cloud-infra-group.io.cloud-infra-group.io,resources=awsvpcendpointserviceprincipals,verbs=get;list;watch;create;update;patch;delete

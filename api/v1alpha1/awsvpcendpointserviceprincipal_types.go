@@ -23,6 +23,7 @@ import (
 // AWSVPCEndpointServicePrincipalSpec defines the desired state of AWSVPCEndpointServicePrincipal.
 type AWSVPCEndpointServicePrincipalSpec struct {
 	AWSVPCEndpointServiceRef AWSVPCEndpointServiceRef `json:"awsVpcEndpointServiceRef"`
+	PrincipalARN             string                   `json:"principalARN"`
 }
 
 // AWSVPCEndpointServicePrincipalStatus defines the observed state of AWSVPCEndpointServicePrincipal.
