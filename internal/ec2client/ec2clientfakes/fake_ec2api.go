@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
+
 	"github.com/cloud-infra-group/ec2-operator/internal/ec2client"
 )
 

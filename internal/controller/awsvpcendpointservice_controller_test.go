@@ -214,8 +214,6 @@ var _ = Describe("AWSVPCEndpointService Controller", func() {
 		})
 
 		It("should delete the resource successfully", func() {
-			const vpcID = "vpce-svc-0123456789abcdef"
-
 			By("Reconciling the first time to set the finalizer", finalizerReconcile)
 
 			By("Deleting the resource to set the deletion timestamp", func() {

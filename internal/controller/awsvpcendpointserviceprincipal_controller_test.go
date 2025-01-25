@@ -94,22 +94,21 @@ var _ = Describe("AWSVPCEndpointServicePrincipal Controller", func() {
 				// Create a sample AWSVPCEndpointService resource if it doesn't exist to be used in tests.
 				awsvpcendpointservice := &ec2operatorv1alpha1.AWSVPCEndpointService{}
 				err := k8sClient.Get(ctx, typeNamespacedName, awsvpcendpointservice)
-				Expect(client.IgnoreNotFound(err)).To(BeNil())
+				Expect(client.IgnoreNotFound(err)).To(Succeed())
 				if err == nil {
-				}
-
-				awsvpcendpointservice = &ec2operatorv1alpha1.AWSVPCEndpointService{
-					ObjectMeta: metav1.ObjectMeta{
-						Name:      typeNamespacedName.Name,
-						Namespace: typeNamespacedName.Namespace,
-					},
-					Spec: ec2operatorv1alpha1.AWSVPCEndpointServiceSpec{
-						NetworkLoadBalancerARN: "arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/test-nlb/abcdef123456",
-						AcceptanceRequired:     false,
-						Tags: map[string]string{
-							"Environment": "test",
+					awsvpcendpointservice = &ec2operatorv1alpha1.AWSVPCEndpointService{
+						ObjectMeta: metav1.ObjectMeta{
+							Name:      typeNamespacedName.Name,
+							Namespace: typeNamespacedName.Namespace,
 						},
-					},
+						Spec: ec2operatorv1alpha1.AWSVPCEndpointServiceSpec{
+							NetworkLoadBalancerARN: "arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/test-nlb/abcdef123456",
+							AcceptanceRequired:     false,
+							Tags: map[string]string{
+								"Environment": "test",
+							},
+						},
+					}
 				}
 				// Ensure the resource is successfully created in the test environment
 				Expect(k8sClient.Create(ctx, awsvpcendpointservice)).To(Succeed())
